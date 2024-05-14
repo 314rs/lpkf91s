@@ -1,0 +1,9 @@
+{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+        "C:\\Users\\larsb\\Documents\\cpp_cross_plattform_template_study\\build\\generators\\CMakePresets.json"
+    ]
+}
