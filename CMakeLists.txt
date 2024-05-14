@@ -1,23 +1,18 @@
-cmake_minimum_required(VERSION 3.23)
-
-set(MY_PROJECT_NAME "CPP_TEMPLATE")
+cmake_minimum_required(VERSION 3.29)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(
-  MY_PROJECT_NAME
-	VERSION 0.1.0
-	LANGUAGES CXX
-  )
+    LPKF91s
+    VERSION 0.1.0
+    LANGUAGES CXX
+    )
   
 find_package(GTest REQUIRED)
-find_package(SQLite3 REQUIRED)
 find_package(Boost REQUIRED)
-find_package(fmt REQUIRED)
-find_package(spdlog REQUIRED)
+find_package(wxWidgets REQUIRED)
 
 if (GCC)
-
     add_compile_options(-pedantic) # Warn on language extensions
     add_compile_options(-Wall) # -Wextra reasonable and standard
     add_compile_options(-Wshadow) # warn the user if a variable declaration shadows one from a parent context
@@ -46,7 +41,7 @@ if (GCC)
 
 elseif(MSVC)
 
-  add_compile_definitions(_WIN32_WINNT=0x0601)  # windows feature magic happening here (just here to avoid compiler warning from boost??)
+    add_compile_definitions(_WIN32_WINNT=0x0601)  # windows feature magic happening here (just here to avoid compiler warning from boost??)
 
     add_compile_options(/permissive-) # Enforces standards conformance.
     add_compile_options(/W4) # All reasonable warnings
@@ -72,18 +67,33 @@ elseif(MSVC)
     add_compile_options(/w14928) # illegal copy-initialization; more than one user-defined conversion has been implicitly applied
 endif()
 
-add_executable(MY_PROJECT_NAME src/main.cpp)
-target_link_libraries(MY_PROJECT_NAME gtest::gtest)
-target_link_libraries(MY_PROJECT_NAME SQLite::SQLite3)
-target_link_libraries(MY_PROJECT_NAME Boost::boost)
+configure_file(src/test.h.in project_version.h)
+include_directories(${PROJECT_BINARY_DIR})
 
+add_executable(gcode2hpgl src/gcode2hpgl_cli.cpp)
+target_link_libraries(gcode2hpgl gtest::gtest)
+target_link_libraries(gcode2hpgl boost::boost)
 
+add_executable(hpgl2lpkf91s src/hpgl2lpkf91s_cli.cpp)
+target_link_libraries(hpgl2lpkf91s boost::boost)
+
+add_executable(lpkf91s src/lpkf91s_gui.cpp)
+set_target_properties(lpkf91s PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
+target_link_libraries(lpkf91s wxWidgets::wxWidgets)
+target_link_libraries(lpkf91s boost::boost)
+# target_sources(lpkf91s PRIVATE ./src/resource.rc)
+
+add_executable(sendHPGL src/sendhpgl_gui.cpp)
+set_target_properties(sendHPGL PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
+target_link_libraries(sendHPGL wxWidgets::wxWidgets)
+target_link_libraries(sendHPGL boost::boost)
+# target_sources(sendHPGL PRIVATE ./src/resource.rc)
 
 
 
 # Prevent building in the source directory
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
-	message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.\n")
+	  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.\n")
 endif()
 
 
@@ -92,20 +102,13 @@ endif()
 # Testing
 include(CTest)
 include(GoogleTest)
+gtest_discover_tests(gcode2hpgl)
 
-add_executable(mainTest ./src/mainTest.cpp)
-target_link_libraries(mainTest GTest::gtest_main)
 
-add_test(NAME testMainReturns COMMAND MY_PROJECT_NAME)
 
-add_test(NAME testMainOuput COMMAND MY_PROJECT_NAME)
-set_property(TEST testMainOuput PROPERTY PASS_REGULAR_EXPRESSION "Hello World!")
 
 add_compile_options(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 set(CMAKE_CXX_CLANG_TIDY
   clang-tidy-11;
   -header-filter=${CMAKE_CURRENT_SOURCE_DIR};
 )
-
-gtest_discover_tests(mainTest TEST_PREFIX gtest.)
-gtest_discover_tests(MY_PROJECT_NAME)

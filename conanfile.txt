@@ -1,9 +1,7 @@
 [requires]
-sqlite3/3.45.0
-fmt/10.2.1
-spdlog/1.13.0
 gtest/1.14.0
-boost/1.84.0
+asio/1.30.2
+boost/1.85.0
 
 [generators]
 CMakeDeps
