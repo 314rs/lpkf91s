@@ -68,7 +68,7 @@ jobs:
       run: ctest -C ${{env.BUILD_TYPE}} --output-junit test_results.xml
       
     - name: Test Summary
-      uses: test-summary/action@v2.2
+      uses: test-summary/action@v2.4
       with:
         paths: "build/${{env.BUILD_TYPE}}/test_results.xml"
       if: always()
