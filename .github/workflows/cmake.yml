@@ -41,6 +41,7 @@ jobs:
 
     - uses: actions/setup-python@v5
       with:
+        python-version: "3.11"
         cache: 'pip' # caching pip dependencies
              
     - name: install conan
@@ -59,21 +60,22 @@ jobs:
       run: |
         sudo apt install build-essential
         pwd
-        
-    - name: cmake
-      run: |
-        cmake --version
-        cmake --preset conan-release
 
     - name: Build Ubuntu
       if: matrix.os == 'ubuntu-latest'
       # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build/${{env.BUILD_TYPE}}/ --config ${{env.BUILD_TYPE}}
+      run: | 
+        cmake --version
+        cmake --preset conan-release
+        cmake --build ${{github.workspace}}/build/${{env.BUILD_TYPE}}/ --config ${{env.BUILD_TYPE}}
 
     - name: Build Windows
       if: matrix.os == 'windows-latest'
       # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build/ --config ${{env.BUILD_TYPE}}
+      run: |
+        cmake --version
+        cmake --preset conan-default
+        cmake --build ${{github.workspace}}/build/ --config ${{env.BUILD_TYPE}}
 
     - name: Test
       working-directory: ${{github.workspace}}/build/${{env.BUILD_TYPE}}/
