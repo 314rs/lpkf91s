@@ -80,12 +80,13 @@ jobs:
         
     - uses: actions/upload-artifact@v4
       with:
-        name: binaries
+        name: "{{matrix.os}}-binaries"
         path: |
           build/Release/gcode2hpgl.exe
           build/Release/hpgl2lpkf91s.exe
-          build/gcode2hpgl
-          build/hpgl2lpkf91s
+          build/Release/gcode2hpgl
+          build/Release/hpgl2lpkf91s
+
 
     - name: Test
       working-directory: ${{github.workspace}}/build/${{env.BUILD_TYPE}}/
