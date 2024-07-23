@@ -1,6 +1,6 @@
 # LPKF91s tooling - gcode to hpgl converter
 
-[![CMake and CTest on ubuntu-latest](https://github.com/314rs/lpkf91s/actions/workflows/cmake-ubuntu-latest.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/cmake-ubuntu-latest.yml)
+[![CMake and CTest on ubuntu-latest](https://github.com/314rs/lpkf91s/actions/workflows/cmake.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/cmake.yml)
 
 This project features some helper programs to revive the LPKF91s PCB mill.
 
@@ -12,7 +12,7 @@ The individual components are:
 
 ## Download
 
-Download the program for your platform from the releases.
+Download the program for your platform from the latest [build action](https://github.com/314rs/lpkf91s/actions/workflows/cmake.yml).
 
 ## Build yourself
 
