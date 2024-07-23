@@ -1,34 +1,42 @@
-[![CMake and CTest on ubuntu-latest](https://github.com/314rs/lpkf91s/actions/workflows/cmake-ubuntu-latest.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/cmake-ubuntu-latest.yml)
 # LPKF91s tooling - gcode to hpgl converter
+
+[![CMake and CTest on ubuntu-latest](https://github.com/314rs/lpkf91s/actions/workflows/cmake-ubuntu-latest.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/cmake-ubuntu-latest.yml)
 
 This project features some helper programs to revive the LPKF91s PCB mill.
 
 The individual components are:
+
 - __gcode2hpgl__: a converter from gcode to hpgl. (cli, gui)
 - __hpgl2serial__: send a hpgl file to the PCB mill via a serial port. (cli, gui)
 - a manual hpgl sender (gui)
 
 ## Download
-Download the program for your platform from the releases
 
+Download the program for your platform from the releases.
 
 ## Build yourself
+
 ### Dependencies
+
 - CMake
-- conan package manager
-- WxWidgets
-- boost (asio, program_options)
+- Conan
+  - boost (asio, program_options)
+  - gtest
+- wxWidgets
 
 ### Build
-```bash
+
+```sh
 conan install conanfile.txt --build=missing
+cmake -DCMAKE_TOOLCHAIN_FILE=./build/generators/conan_toolchain.cmake -S. -B./build -G "YourGeneratorHere"
 ```
 
-```bash
-cmake
+### Testing
+
+```sh
+cd build
+ctest
 ```
-
-
 
 ## Commands
 
@@ -67,16 +75,20 @@ Defines the track speed in the XY level v=[mm/s] with the tool lowered and alloc
 Set units to mm
 
 ### G90
+
 set to absolute positioning
 
-### G91 
+### G91
+
 set to relative positioning
 
 ### G92
-set position 
+
+set position
 > i.e. Give the current position a new name
 
 #### Parameters
+
 This command can be used without any additional parameters.
 `Xnnn` new X axis position
 `Ynnn` new Y axis position
@@ -84,30 +96,44 @@ This command can be used without any additional parameters.
 `Ennn` new extruder position
 
 ### M0
+
 Stop or unconditional stop
 
 #### Parameters
+
 This command can be used without any additional parameters.
 `Pnnn` Time to wait, in milliseconds1
 `Snnn` Time to wait, in seconds2
+
 #### Example
+
 `M0`
 
 
 ### M3
+
 Spindle On, Clockwise
 
 #### Parameters
+
 ```Snnn Spindle RPM```
+
 #### Example
+
 ```M3 S4000```
 
-
 ### M5
+
 Spindle off
 
-### M6 
+### M6
+
 Tool change
 
-### T1 
+### T1
+
 select tool
+
+## To-Do
+
+- [ ] https://forums.wxwidgets.org/viewtopic.php?t=49497
