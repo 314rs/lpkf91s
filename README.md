@@ -1,6 +1,7 @@
 # LPKF91s tooling - gcode to hpgl converter
 
 [![CMake and CTest on ubuntu-latest](https://github.com/314rs/lpkf91s/actions/workflows/cmake.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/cmake.yml)
+[![Doxygen](https://github.com/314rs/lpkf91s/actions/workflows/doxygen.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/doxygen.yml)
 
 This project features some helper programs to revive the LPKF91s PCB mill.
 
@@ -37,6 +38,10 @@ cmake -DCMAKE_TOOLCHAIN_FILE=./build/generators/conan_toolchain.cmake -S. -B./bu
 cd build
 ctest
 ```
+
+## Doxygen
+
+Doxygen documentation can be found [here](https://314rs.github.io/lpkf91s/).
 
 ## Wiki
 
