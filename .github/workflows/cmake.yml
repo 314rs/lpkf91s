@@ -81,7 +81,7 @@ jobs:
         
     - uses: actions/upload-artifact@v4
       with:
-        name: "{{matrix.os}}-binaries"
+        name: ${{matrix.os}}-binaries
         path: |
           build/Release/gcode2hpgl.exe
           build/Release/hpgl2lpkf91s.exe
