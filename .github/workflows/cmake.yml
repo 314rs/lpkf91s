@@ -38,6 +38,7 @@ jobs:
         path: | 
           ~/.conan2/
           ~/.cache/pip/
+          %LocalAppData%\pip\Cache
         key: ${{ runner.os }}-dependencies
 
     - uses: actions/setup-python@v5
