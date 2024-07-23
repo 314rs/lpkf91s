@@ -4,3 +4,5 @@ CMakeCache.*
 CMakeFiles/*
 [Tt]esting/
 [Tt]est/
+.vscode/
+CMakeUserPresets.json
