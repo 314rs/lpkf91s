@@ -1,6 +1,6 @@
 # This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
-name: CMake and CTest on ubuntu-latest
+name: CMake and CTest
 
 on:
   push:
@@ -66,10 +66,12 @@ jobs:
         cmake --preset conan-release
 
     - name: Build Ubuntu
+      if: matrix.os == 'ubuntu-latest'
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build/${{env.BUILD_TYPE}}/ --config ${{env.BUILD_TYPE}}
 
     - name: Build Windows
+      if: matrix.os == 'windows-latest'
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build/ --config ${{env.BUILD_TYPE}}
 
