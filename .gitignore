@@ -6,3 +6,7 @@ CMakeFiles/*
 [Tt]est/
 .vscode/
 CMakeUserPresets.json
+project_version.h
+**output.hpgl
+**.py
+**.nc
