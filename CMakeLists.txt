@@ -69,7 +69,7 @@ elseif(MSVC)
     add_compile_options(/w14928) # illegal copy-initialization; more than one user-defined conversion has been implicitly applied
 endif()
 
-configure_file(src/test.h.in project_version.h)
+configure_file(src/version.h.in project_version.h)
 include_directories(${PROJECT_BINARY_DIR})
 
 add_executable(gcode2hpgl src/gcode2hpgl_cli.cpp)
