@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.29)
+cmake_minimum_required(VERSION 3.22)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -6,11 +6,13 @@ project(
     LPKF91s
     VERSION 0.1.0
     LANGUAGES CXX
-    )
-  
+)
+
 find_package(GTest REQUIRED)
 find_package(Boost REQUIRED)
-find_package(wxWidgets REQUIRED)
+if (GUI)
+    find_package(wxWidgets REQUIRED)
+endif()
 
 if (GCC)
     add_compile_options(-pedantic) # Warn on language extensions
@@ -77,18 +79,20 @@ target_link_libraries(gcode2hpgl boost::boost)
 add_executable(hpgl2lpkf91s src/hpgl2lpkf91s_cli.cpp)
 target_link_libraries(hpgl2lpkf91s boost::boost)
 
-add_executable(lpkf91s src/lpkf91s_gui.cpp)
-set_target_properties(lpkf91s PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
-target_link_libraries(lpkf91s wxWidgets::wxWidgets)
-target_link_libraries(lpkf91s boost::boost)
-# target_sources(lpkf91s PRIVATE ./src/resource.rc)
 
-add_executable(sendHPGL src/sendhpgl_gui.cpp)
-set_target_properties(sendHPGL PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
-target_link_libraries(sendHPGL wxWidgets::wxWidgets)
-target_link_libraries(sendHPGL boost::boost)
-# target_sources(sendHPGL PRIVATE ./src/resource.rc)
+if(GUI)
+    add_executable(lpkf91s src/lpkf91s_gui.cpp)
+    set_target_properties(lpkf91s PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
+    target_link_libraries(lpkf91s wxWidgets::wxWidgets)
+    target_link_libraries(lpkf91s boost::boost)
+    # target_sources(lpkf91s PRIVATE ./src/resource.rc)
 
+    add_executable(sendHPGL src/sendhpgl_gui.cpp)
+    set_target_properties(sendHPGL PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
+    target_link_libraries(sendHPGL wxWidgets::wxWidgets)
+    target_link_libraries(sendHPGL boost::boost)
+    # target_sources(sendHPGL PRIVATE ./src/resource.rc)
+endif()
 
 
 # Prevent building in the source directory
