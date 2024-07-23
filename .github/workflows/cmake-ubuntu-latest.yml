@@ -36,9 +36,12 @@ jobs:
       with:
         path: | 
           ~/.conan2/
-          ~/.cache/pip/wheels/
         key: ${{ runner.os }}-dependencies
-     
+
+    - uses: actions/setup-python@v5
+      with:
+        cache: 'pip' # caching pip dependencies
+             
     - name: install conan
       run: | 
         pip install conan
