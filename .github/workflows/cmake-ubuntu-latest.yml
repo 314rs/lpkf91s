@@ -52,18 +52,6 @@ jobs:
       if: ${{ steps.cache.output.cache-hit != 'true' }}
       run: conan install conanfile.txt --build=missing
 
-    - name: Checkout WX
-      uses: actions/checkout@v4
-      with:
-        repository: WxWidgets/WxWidgets
-        ref: v3.2.5
-        path: wxWidgets
-        submodules: 'true'
-
-    - run: | 
-        pwd
-        ls --color=auto -alF
-
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
