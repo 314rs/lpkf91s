@@ -29,3 +29,6 @@ cmake
 ```
 ## Wiki
 For further information check out the [wiki](https://github.com/314rs/lpkf91s/wiki).
+
+## License
+This software is open source and released under the MIT License.
