@@ -37,7 +37,10 @@ cmake -DCMAKE_TOOLCHAIN_FILE=./build/generators/conan_toolchain.cmake -S. -B./bu
 cd build
 ctest
 ```
+## Wiki
+For further information check out the [wiki](https://github.com/314rs/lpkf91s/wiki).
 
+<<<<<<< HEAD
 ## Commands
 
 gcode -> hpgl absolute (hpgl relative)
@@ -137,3 +140,7 @@ select tool
 ## To-Do
 
 - [ ] https://forums.wxwidgets.org/viewtopic.php?t=49497
+=======
+## License
+This software is open source and released under the MIT License.
+>>>>>>> bbfc1d10632c35bc89ed77f52129215221bb2875
