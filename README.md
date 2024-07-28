@@ -1,7 +1,6 @@
-<img src="./media/lpkf91s_controller_logo.svg" alt="logo" align="right" align="left" width="100" height="100" />
-
 # LPKF91s tooling - gcode to hpgl converter
 
+<img src="./media/lpkf91s_controller_logo.svg" alt="logo" align="right" align="left" width="100" height="100" />
 
 [![CMake and CTest on ubuntu-latest](https://github.com/314rs/lpkf91s/actions/workflows/cmake.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/cmake.yml)
 [![CodeQL](https://github.com/314rs/lpkf91s/actions/workflows/codeql.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/codeql.yml)
