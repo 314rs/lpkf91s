@@ -102,16 +102,14 @@ jobs:
     - name: install CMake Ubuntu
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt install build-essential tree
-        pwd
 
     - name: Build Ubuntu
       run: | 
         cmake --version
         cmake --preset conan-release
-        cmake --build ${{github.workspace}}/build/${{env.BUILD_TYPE}}/ --config ${{env.BUILD_TYPE}}
+        cmake --build ${{github.workspace}}/build/${{Release}}/ --config ${{Release}}
 
 
     - name: Perform CodeQL Analysis
