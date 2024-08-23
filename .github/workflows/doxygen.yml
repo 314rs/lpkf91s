@@ -20,17 +20,14 @@ permissions:
   id-token: write
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
       - name: get doxygen-awesome-css
         run: |
           mkdir -p docs
@@ -42,11 +39,8 @@ jobs:
         run: doxygen
       - name: copy images folder
         run: cp -R ./media ./docs/html/
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
           path: './docs/html'
-      - name: Deploy to GitHub Pages
+      - uses: actions/deploy-pages@v4
         id: deployment
-        uses: actions/deploy-pages@v4
