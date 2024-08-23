@@ -5,6 +5,8 @@
 [![CMake and CTest on ubuntu-latest](https://github.com/314rs/lpkf91s/actions/workflows/cmake.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/cmake.yml)
 [![CodeQL](https://github.com/314rs/lpkf91s/actions/workflows/codeql.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/codeql.yml)
 [![Doxygen](https://github.com/314rs/lpkf91s/actions/workflows/doxygen.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/doxygen.yml)
+![GitHub License](https://img.shields.io/github/license/314rs/lpkf91s)
+
 
 This project features some helper programs to revive the LPKF91s PCB mill.
 
@@ -32,6 +34,7 @@ Download the program for your platform from the latest [build action](https://gi
 
 ```sh
 conan install conanfile.txt --build=missing
+cmake --preset conan-default
 cmake -DCMAKE_TOOLCHAIN_FILE=./build/generators/conan_toolchain.cmake -S. -B./build -G "YourGeneratorHere"
 ```
 
