@@ -1,12 +1,12 @@
 # LPKF91s tooling - gcode to hpgl converter
 
+<!-- markdownlint-disable MD033 -->
 <img src="./media/lpkf91s_controller_logo.svg" alt="logo" align="right" align="left" width="100" height="100" />
 
 [![CMake and CTest on ubuntu-latest](https://github.com/314rs/lpkf91s/actions/workflows/cmake.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/cmake.yml)
 [![CodeQL](https://github.com/314rs/lpkf91s/actions/workflows/codeql.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/codeql.yml)
 [![Doxygen](https://github.com/314rs/lpkf91s/actions/workflows/doxygen.yml/badge.svg)](https://github.com/314rs/lpkf91s/actions/workflows/doxygen.yml)
 ![GitHub License](https://img.shields.io/github/license/314rs/lpkf91s)
-
 
 This project features some helper programs to revive the LPKF91s PCB mill.
 
@@ -55,4 +55,4 @@ For further information check out the [wiki](https://github.com/314rs/lpkf91s/wi
 
 ## License
 
-This software is open source and released under the MIT License.
+This software is open source and released under the [MIT License](LICENSE.txt).
