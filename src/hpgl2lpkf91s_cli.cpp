@@ -1,9 +1,9 @@
 #include <iostream>
-#include <iostream>
 #include <fstream>
 #include <boost/program_options.hpp>
 #include <boost/asio.hpp>
-#include "project_version.h"
+
+#include  "version.hpp"
 
 using std::string;
 namespace asio = boost::asio;
@@ -27,7 +27,7 @@ int main(int argc, char const *argv[])
 		po::notify(vm); // important if this->notifier() is set on an option
 
 		if (vm.count("version")) {
-			std::cout << "Version: " << string(PROJECT_VERSION) << std::endl;
+			std::cout << "Version: " << string(GIT_VERSION_STRING) << std::endl;
 		}
 		if (vm.count("help")) {
 			std::cout << desc << '\n' << "developed by Lars Bornträger" << std::endl;
@@ -41,7 +41,8 @@ int main(int argc, char const *argv[])
 	}
 	catch (const po::error &ex)
 	{
-		std::cerr << ex.what() << std::endl;
+		
+		std::cerr << "before" <<ex.what() << "after" << std::endl;
 	}
 	
 
@@ -71,7 +72,7 @@ int main(int argc, char const *argv[])
 				if (line == "") {
 					continue;
 				}
-				// std::cout << line << std::endl;
+				std::cout << line << std::endl;
 				port.write_some(asio::buffer(line));
 				asio::streambuf buf;
 				asio::read_until(port, buf, "C");

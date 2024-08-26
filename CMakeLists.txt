@@ -4,9 +4,19 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(
     LPKF91s
-    VERSION 0.1.0
     LANGUAGES CXX
 )
+
+# Get the latest commit hash
+execute_process(
+    COMMAND git describe --tags --always --dirty=-dev
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_VERSION_STRING
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+message(STATUS "GIT_VERSION_STRING: ${GIT_VERSION_STRING}")
+file(WRITE ./src/version.hpp "#pragma once\n#define GIT_VERSION_STRING \"${GIT_VERSION_STRING}\"")
+include(./src/version.hpp)
 
 find_package(GTest REQUIRED)
 find_package(Boost REQUIRED)
@@ -69,10 +79,22 @@ elseif(MSVC)
     add_compile_options(/w14928) # illegal copy-initialization; more than one user-defined conversion has been implicitly applied
 endif()
 
-configure_file(src/version.h.in project_version.h)
-include_directories(${PROJECT_BINARY_DIR})
+# Testing
+include(CTest)
+include(GoogleTest)
+
+
+add_library(gcode2hpgl_parser src/gcode2hpgl_parser.cpp)
+add_executable(gcode2hpgl_parser.test ./src/gcode2hpgl_parser.test.cpp)
+target_link_libraries(gcode2hpgl_parser.test gtest::gtest)
+target_link_libraries(gcode2hpgl_parser.test gcode2hpgl_parser)
+set_target_properties(gcode2hpgl_parser.test PROPERTIES OUTPUT_NAME "gcode2hpgl_parser.test-${GIT_VERSION_STRING}")
+gtest_discover_tests(gcode2hpgl_parser.test TEST_PREFIX gtest.)
+
 
 add_executable(gcode2hpgl src/gcode2hpgl_cli.cpp)
+set_target_properties(gcode2hpgl PROPERTIES OUTPUT_NAME "gcode2hpgl-${GIT_VERSION_STRING}")
+target_link_libraries(gcode2hpgl gcode2hpgl_parser)
 target_link_libraries(gcode2hpgl gtest::gtest)
 target_link_libraries(gcode2hpgl boost::boost)
 
