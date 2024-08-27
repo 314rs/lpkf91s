@@ -29,16 +29,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
       - name: get doxygen-awesome-css
-        run: |
-          mkdir -p docs
-          cd docs
-          git clone https://github.com/jothepro/doxygen-awesome-css.git
+        run: git clone https://github.com/jothepro/doxygen-awesome-css.git docs/doxygen-awesome-css
+      - name: get project number
+        run: echo "PROJECT_NUMBER = $(git describe --tags --always --dirty=-dev)" > docs/PROJECT_NUMBER
       - name: get doxygen
         run: sudo apt install doxygen graphviz 
-      - name: build doxygen
-        run: doxygen
+      - run: doxygen
       - name: copy images folder
-        run: cp -R ./media ./docs/html/
+        run: cp -R ./media ./docs/html/ || true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: './docs/html'
