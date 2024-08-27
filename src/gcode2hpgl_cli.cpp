@@ -13,7 +13,7 @@
 #include <fstream>
 #include <map>
 #include <vector>
-#include <string>s
+#include <string>
 #include <boost/program_options.hpp>
 #include "version.hpp"
 #include "gcode2hpgl_parser.hpp"
@@ -35,7 +35,8 @@ int main(int argc, char *argv[])
 		("help,h", "Help screen, show this message")
 		("version" , "Show version number")
 		("input,i", po::value<string>(), "input file name")
-		("output,o", po::value<string>()->default_value("output.hpgl"), "output file name");
+		("output,o", po::value<string>()->default_value("output.hpgl"), "output file name")
+		("verbose,v", "Verbose output");
 
 		po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
 		po::notify(vm); // important if this->notifier() is set on an option
@@ -62,14 +63,19 @@ int main(int argc, char *argv[])
 
 		if (in.is_open()) {
 			for(std::string line; std::getline(in, line);) {
+				if (line.empty()) {continue;}
+				if (line[0] == '(') {if (vm.count("verbose")){std::cout << "Ignoring comment: " << line << std::endl;} continue;}
 				string command = line.substr(0, line.find(' '));
 				auto pos = commands.find(command);
 				if (pos == commands.end()) {
 					std::cerr << "Unknown command in line: \"" << line << "\" (skipping this line)" << std::endl;
 				} else {
 					try {
-						std::cout << line << "\n->\t" << ((*pos->second)(line)) << std::endl;
+						
 						out << ((*pos->second)(line)) << std::endl;
+						if (vm.count("verbose")) {
+							std::cout << line << "\n->\t" << ((*pos->second)(line)) << std::endl;
+						}
 					} catch (const std::exception &ex) {
 						std::cerr << "Exception while transpiling : " << line << "\n" << ex.what() << std::endl;
 					}
