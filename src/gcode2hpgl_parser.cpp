@@ -23,11 +23,14 @@ using std::string;
 
 /**
  * \f$ \mathrm{factor} = \frac{\text{hpgl steps}}{\text{gcode mm}} \f$
- * from lpkf91s manual: The step size is 7.9375 mm/step (6.35 mm/800 steps).
+ * from lpkf91s manual: The step size is 7.9375 µm/step (6.35 mm/800 steps).
  */
-const double factor = 0.0079375; 
-static std::valarray<int> gcode_current_xy = {0, 0};
-static std::valarray<int> gcode_current_origin = {0, 0};
+static const double factor_mm = 0.0079375; 
+static const double factor_inch = 0.0003125;
+static const double* factor = &factor_mm;
+
+static std::valarray<double> gcode_current_xy = {0, 0};
+static std::valarray<double> gcode_current_origin = {0, 0};
 static bool gcode_absolute_positioning = true; /// default: `true`, `true` after G90, `false` after G91
 
 
@@ -37,7 +40,7 @@ static bool gcode_absolute_positioning = true; /// default: `true`, `true` after
  * @param in string to split
  * @return std::vector<string> vector of splitted strings
  */
-std::vector<string> split(string in) {
+static std::vector<string> split(const string in) {
 	size_t last = 0, next = 0;
 	std::vector<string> out;
 	while((next = in.find(' ', last)) != string::npos) {
@@ -54,7 +57,7 @@ std::vector<string> split(string in) {
  * @param in string (full line) with `G0` or `G1` command
  * @return converted hpgl command 
  */
-string parse_g0_g1(string in) {
+static string parse_g0_g1(const string in) {
 	/// @todo check if absolute or relative
 	string out = "";
 	std::vector<string> splitted = split(in);
@@ -81,7 +84,7 @@ string parse_g0_g1(string in) {
 		f.erase(0,1);
 
 		/// @todo check for speed units hpgl is mm/s;  gcode is ???/min
-		out += "VS" + std::to_string(int(std::stod(f)/factor)) + ";"; 
+		out += "VS" + std::to_string(int(std::stod(f)/(*factor))) + ";"; 
 	}
 
 	// xy coordinates
@@ -93,12 +96,11 @@ string parse_g0_g1(string in) {
 
 		string y = splitted[y_ind - splitted.begin()];
 		y.erase(0,1);
-		gcode_current_xy = {std::stoi(x), std::stoi(y)};
-		out += (gcode_absolute_positioning ? "PA" : "PR") +  std::to_string(int(std::stod(x)/factor)) + "," + std::to_string(int(std::stod(y)/factor)) + ";";	
+		gcode_current_xy = gcode_current_origin + std::valarray<double>{std::stod(x), std::stod(y)};
+		out += (gcode_absolute_positioning ? "PA" : "PR") +  std::to_string(int(gcode_current_xy[0]/(*factor))) + "," + std::to_string(int(gcode_current_xy[1]/(*factor))) + ";";	
 	}
 	return out;
 };
-
 
 /**
  * @brief arc conversion
@@ -106,7 +108,7 @@ string parse_g0_g1(string in) {
  * @param in string (full line) with `G2` or `G3` command
  * @return converted hpgl command 
  */
-string parse_g2_g3(string in) {
+static string parse_g2_g3(const string in) {
 	// throw std::exception("gcode g2, g3 is not implemented correctly");
 	/// @todo check if absolute or relative
 	string out = "";
@@ -119,7 +121,7 @@ string parse_g2_g3(string in) {
 		f.erase(0,1);
 		
 		/// @todo check for speed units hpgl is mm/s;  gcode is ???/min
-		out += "VS" + std::to_string(int(std::stod(f)/factor)) + ";"; 
+		out += "VS" + std::to_string(int(std::stod(f)/(*factor))) + ";"; 
 	}
 
 	// center coordinate
@@ -139,7 +141,7 @@ string parse_g2_g3(string in) {
 
 	string y = splitted[y_ind - splitted.begin()];
 	y.erase(0,1);
-	gcode_current_xy = {std::stoi(x), std::stoi(y)};
+	gcode_current_xy = {std::stod(x), std::stod(y)};
 
 
 
@@ -149,7 +151,7 @@ string parse_g2_g3(string in) {
 	double angle = angle2 - angle1;
 	string a = std::to_string(int(angle));	/// @todo have a clever idea on how to compute the angle. perhaps store the current position. if thats not possible, the hpgl cant be generated beforehand. :(
 	out += (gcode_absolute_positioning ? "AA" : "AR"); // absolute or relative
-	out += std::to_string(int(std::stod(i)/factor)) + "," + std::to_string(int(std::stod(j)/factor)) + "," + a + ";";	
+	out += std::to_string(int(std::stod(i)/(*factor))) + "," + std::to_string(int(std::stod(j)/(*factor))) + "," + a + ";";	
 	return out;
 
 };
@@ -158,9 +160,9 @@ string parse_g2_g3(string in) {
  * @brief wait
  * 
  * @param in string (full line) with `G4` command
- * @retval !TW (t);
+ * @retval `!TW (t);`
  */
-string parse_g4(string in) {
+static string parse_g4(const string in) {
 	assert (in.find("G04") != string::npos);
 	std::vector<string> splitted = split(in);
 
@@ -190,12 +192,11 @@ string parse_g4(string in) {
  * @retval "" 
  * @return empty string
  */
-string parse_g90(string in) {
+static string parse_g90(const string in) {
 	assert (in.find("G90") != string::npos);
 	gcode_absolute_positioning = true;
 	return "";
 };
-
 
 /**
  * @brief set relative positioning
@@ -204,7 +205,7 @@ string parse_g90(string in) {
  * @retval "" 
  * @return empty string
  */
-string parse_g91(string in) {
+static string parse_g91(const string in) {
 	assert (in.find("G91") != string::npos);
 	gcode_absolute_positioning = false;
 	return "";
@@ -216,7 +217,7 @@ string parse_g91(string in) {
  * @param in string (full line) with `G92` command
  * @return string 
  */
-string parse_g92(string in) {
+static string parse_g92(const string in) {
 	// throw std::exception("G92 is not implemented yet");
 	assert (in.find("G92") != string::npos);
 
@@ -230,7 +231,7 @@ string parse_g92(string in) {
 
 		string y = splitted[y_ind - splitted.begin()];
 		y.erase(0,1);
-		std::valarray<int> gcode_next_xy = {std::stoi(x), std::stoi(y)};
+		auto gcode_next_xy = std::valarray<double>{std::stod(x), std::stod(y)};
 		gcode_current_origin = gcode_current_xy - gcode_next_xy;
 		gcode_current_xy = gcode_next_xy;
 	}
@@ -238,21 +239,21 @@ string parse_g92(string in) {
 	return "";
 };
 
-string parse_m3(string in) {
+static string parse_m3(const string in) {
 	return string("!EM1;"); // Spindle on, clockwise
 };
 
-string parse_m5(string in) {
+static string parse_m5(const string in) {
 	return string("!EM0;"); // Spindle off
 };
 
-string parse_m6(string in) {
+static string parse_m6(const string in) {
 	return string("!CM0;"); // change mode @todo what does flatcam actually produce here and is this needed
 };
 
 
 /// @todo allow non padded gcode
-std::map<std::string, std::string (*)(std::string)> commands = {
+std::map<std::string, std::string (*)(const std::string)> commands = {
 	{"G00", parse_g0_g1},
 	{"G01", parse_g0_g1},
 	{"G02", parse_g2_g3},

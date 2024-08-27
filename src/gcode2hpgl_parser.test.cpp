@@ -18,11 +18,36 @@
 using std::string;
 
 
+TEST(gcode2hpgl_parser, commands_zero_padding) {
+	auto fun1 = commands.at(string("G00"));
+	auto fun2 = commands.at(string("G0"));
+	EXPECT_EQ(fun1, fun2);
+
+	fun1 = commands.at(string("G01"));
+	fun2 = commands.at(string("G1"));
+	EXPECT_EQ(fun1, fun2);
+
+	fun1 = commands.at(string("G02"));
+	fun2 = commands.at(string("G2"));
+	EXPECT_EQ(fun1, fun2);
+
+	fun1 = commands.at(string("G03"));
+	fun2 = commands.at(string("G3"));
+	EXPECT_EQ(fun1, fun2);
+}
+
 TEST(gcode2hpgl_parser, G00_0_0) {
 	auto fun = commands.at(string("G00"));
 	string str("G00 X0 Y0");
 	string ret = fun(str);
 	EXPECT_EQ(ret, string("PA0,0;")); ///@todo whitespace and missing semicolon are allowed
+}
+
+TEST(gcode2hpgl_parser, G00_scaling) {
+	auto fun = commands.at(string("G00"));
+	string str("G00 X6.35 Y6.35");
+	string ret = fun(str);
+	EXPECT_EQ(ret, string("PA800,800;")); ///@todo whitespace and missing semicolon are allowed
 }
 
 TEST(gcode2hpgl_parser, G00_X_only) {
@@ -47,6 +72,7 @@ TEST(gcode2hpgl_parser, EQ_G00_G01) {
 		"G01 X1234 Y5678",
 		"G00 X42",
 		"G01 Y69",
+		"G00 X6.35 Y6.35",
 	};	
 	for (auto str : strs) {
 		EXPECT_EQ(parseG00(str), parseG01(str));
@@ -89,6 +115,27 @@ TEST(gcode2hpgl_parser, G91) {
 	// G91: relative positioning
 	auto fun = commands.at(string("G91"));
 	fun(string("G91"));
+}
+
+TEST(gcode2hpgl_parser, absolute_and_relative_positioning) {
+	string lines[] = {
+		"G00 X0 Y0",
+		"G91",
+		"G00 X6.35 Y6.35",
+		"G00 X6.35 Y6.35",
+		"G90",
+		"G00 X6.35 Y6.35",
+	};
+	string out = "";
+
+	for(auto line : lines) {
+		string command = line.substr(0, line.find(' '));
+		auto fun = commands.at(command);
+		out += fun(line) + "\n";
+	}
+	string expected = "PA0,0;\n\nPR800,800;\nPR800,800;\n\nPA800,800;\n";
+
+	EXPECT_EQ(out, expected);
 }
 
 TEST(gcode2hpgl_parser, G92) {
