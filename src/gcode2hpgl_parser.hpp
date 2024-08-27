@@ -14,4 +14,4 @@
 #include <map>
 #include <string>
 
-extern std::map<std::string, std::string (*)(const std::string)> commands;
+extern const std::map<std::string, std::string (*)(const std::string)> commands;

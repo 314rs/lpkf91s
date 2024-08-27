@@ -186,6 +186,43 @@ static string parse_g4(const string in) {
 }
 
 /**
+ * @brief set XY plane
+ * this is just here to make `Unknown command G17` dissapear
+ * @param in 
+ * @return empty string 
+ * @retval ""
+ */
+static string parse_g17(const string in) {
+	// set XY plane as the current plane for G2/G3 arc moves. We do nothing here, because thats the only option anyways
+	assert (in.find("G17") != string::npos);
+	return "";
+}
+
+/**
+ * @brief set gcode units to inches
+ * 
+ * @param in 
+ * @return string 
+ */
+static string parse_g20(const string in) {
+	assert(in.find("G20") != string::npos);
+	factor = &factor_inch;
+	return "";
+}
+
+/**
+ * @brief set gcode units to millimeters
+ * 
+ * @param in 
+ * @return string 
+ */
+static string parse_g21(const string in) {
+	assert(in.find("G21") != string::npos);
+	factor = &factor_mm;
+	return "";
+}
+
+/**
  * @brief set absolute positioning
  * 
  * @param in 
@@ -239,6 +276,19 @@ static string parse_g92(const string in) {
 	return "";
 };
 
+/**
+ * @brief set XY plane
+ * this is just here to make `Unknown command M02` dissapear
+ * @param in 
+ * @return empty string 
+ * @retval ""
+ */
+static string parse_m2(const string in) {
+	// set XY plane as the current plane for G2/G3 arc moves. We do nothing here, because thats the only option anyways
+	assert (in.find("M02") != string::npos);
+	return "";
+}
+
 static string parse_m3(const string in) {
 	return string("!EM1;"); // Spindle on, clockwise
 };
@@ -253,16 +303,28 @@ static string parse_m6(const string in) {
 
 
 /// @todo allow non padded gcode
-std::map<std::string, std::string (*)(const std::string)> commands = {
+const std::map<std::string, std::string (*)(const std::string)> commands = {
 	{"G00", parse_g0_g1},
+	{"G0", parse_g0_g1},
 	{"G01", parse_g0_g1},
+	{"G1", parse_g0_g1},
 	{"G02", parse_g2_g3},
+	{"G2", parse_g2_g3},
 	{"G03", parse_g2_g3},
+	{"G3", parse_g2_g3},
 	{"G04", parse_g4},
+	{"G17", parse_g17},
+	{"G20", parse_g20},
+	{"G21", parse_g21},
 	{"G90", parse_g90},
 	{"G91", parse_g91},
 	{"G92", parse_g92},
+	{"M2", parse_m2},
+	{"M02", parse_m2},
+	{"M3", parse_m3},
 	{"M03", parse_m3},
+	{"M5", parse_m5},
 	{"M05", parse_m5},
+	{"M6", parse_m6},
 	{"M06", parse_m6},
 };
