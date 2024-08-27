@@ -49,6 +49,14 @@ ctest
 
 Doxygen documentation can be found [here](https://314rs.github.io/lpkf91s/).
 
+Or build it yourself:
+
+```sh
+git clone https://github.com/jothepro/doxygen-awesome-css.git docs/doxygen-awesome-css
+echo "PROJECT_NUMBER = $(git describe --tags --always --dirty=-dev)" > docs/PROJECT_NUMBER # important, always do this before running doxygen
+doxygen
+```
+
 ## Wiki
 
 For further information check out the [wiki](https://github.com/314rs/lpkf91s/wiki).
