@@ -23,7 +23,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          #- macos-latest
+          - macos-latest
           - windows-latest
       fail-fast: false
   
@@ -46,7 +46,7 @@ jobs:
              
     - name: conan
       run: | 
-        pip install conan
+        pip3 install conan
         conan profile detect --force
         conan install conanfile.txt --build=missing
 
@@ -58,8 +58,8 @@ jobs:
         sudo apt install build-essential tree
         pwd
 
-    - name: Build Ubuntu
-      if: matrix.os == 'ubuntu-latest'
+    - name: Build ubuntu, macos
+      if: matrix.os != 'windows-latest'
       # Build your program with the given configuration
       run: | 
         cmake --version
