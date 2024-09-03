@@ -29,9 +29,11 @@ static const double factor_mm = 0.0079375;
 static const double factor_inch = 0.0003125;
 static const double* factor = &factor_mm;
 
-static std::valarray<double> gcode_current_xy = {0, 0};
-static std::valarray<double> gcode_current_origin = {0, 0};
+static std::valarray<double> gcode_current_xy = {0.0, 0.0};
+static std::valarray<double> gcode_current_origin = {3.125, 3.125};
 static bool gcode_absolute_positioning = true; /// default: `true`, `true` after G90, `false` after G91
+
+// `OH;` output : W42267,25088,0
 
 
 /**
@@ -78,14 +80,14 @@ static string parse_g0_g1(const string in) {
 	}
 
 	// speed
-	auto f_ind = std::find_if(splitted.begin(), splitted.end(), [](string s) { return s[0] == 'F'; });
-	if (f_ind != splitted.end()) {
-		string f = splitted[f_ind - splitted.begin()];
-		f.erase(0,1);
+	// auto f_ind = std::find_if(splitted.begin(), splitted.end(), [](string s) { return s[0] == 'F'; });
+	// if (f_ind != splitted.end()) {
+	// 	string f = splitted[f_ind - splitted.begin()];
+	// 	f.erase(0,1);
 
-		/// @todo check for speed units hpgl is mm/s;  gcode is ???/min
-		out += "VS" + std::to_string(int(std::stod(f)/(*factor))) + ";"; 
-	}
+	// 	/// @todo check for speed units hpgl is mm/s;  gcode is ???/min
+	// 	out += "VS" + std::to_string(int(std::stod(f)/(*factor))) + ";"; 
+	// }
 
 	// xy coordinates
 	auto x_ind = std::find_if(splitted.begin(), splitted.end(), [](string s) { return s[0] == 'X'; });
@@ -115,14 +117,14 @@ static string parse_g2_g3(const string in) {
 	std::vector<string> splitted = split(in);
 
 		// speed
-	auto f_ind = std::find_if(splitted.begin(), splitted.end(), [](string s) { return s[0] == 'F'; });
-	if (f_ind != splitted.end()) {
-		string f = splitted[f_ind - splitted.begin()];
-		f.erase(0,1);
+	// auto f_ind = std::find_if(splitted.begin(), splitted.end(), [](string s) { return s[0] == 'F'; });
+	// if (f_ind != splitted.end()) {
+	// 	string f = splitted[f_ind - splitted.begin()];
+	// 	f.erase(0,1);
 		
-		/// @todo check for speed units hpgl is mm/s;  gcode is ???/min
-		out += "VS" + std::to_string(int(std::stod(f)/(*factor))) + ";"; 
-	}
+	// 	/// @todo check for speed units hpgl is mm/s;  gcode is ???/min
+	// 	out += "VS" + std::to_string(int(std::stod(f)/(*factor))) + ";"; 
+	// }
 
 	// center coordinate
 	auto i_ind = std::find_if(splitted.begin(), splitted.end(), [](string s) { return s[0] == 'I'; });
@@ -131,6 +133,7 @@ static string parse_g2_g3(const string in) {
 	auto j_ind = std::find_if(splitted.begin(), splitted.end(), [](string s) { return s[0] == 'J'; });
 	string j = splitted[j_ind - splitted.begin()];
 	j.erase(0,1);
+	auto gcode_center_coordinate = gcode_current_origin + std::valarray<double>{std::stod(i), std::stod(j)};
 
 	// destination coordinate
 	auto x_ind = std::find_if(splitted.begin(), splitted.end(), [](string s) { return s[0] == 'X'; });
@@ -138,20 +141,24 @@ static string parse_g2_g3(const string in) {
 	assert (x_ind != splitted.end() && y_ind != splitted.end()); // G02 or G03 requires X and Y coordinates
 	string x = splitted[x_ind - splitted.begin()];
 	x.erase(0,1);
-
 	string y = splitted[y_ind - splitted.begin()];
 	y.erase(0,1);
-	gcode_current_xy = {std::stod(x), std::stod(y)};
+	auto gcode_destination_coordinate = gcode_current_origin + std::valarray<double>{std::stod(x), std::stod(y)};
 
 
 
 	// angle
-	double angle1 = atan2((std::stod(i) - gcode_current_xy[0]), (std::stod(j) - gcode_current_xy[1]));
-	double angle2 = atan2((std::stod(x) - gcode_current_xy[0]), (std::stod(y) - gcode_current_xy[1]));
+	double angle1 = atan2((gcode_center_coordinate[0] - gcode_current_xy[0]), (gcode_center_coordinate[1] - gcode_current_xy[1]));
+	double angle2 = atan2((gcode_destination_coordinate[0] - gcode_current_xy[0]), (gcode_destination_coordinate[1] - gcode_current_xy[1]));
 	double angle = angle2 - angle1;
-	string a = std::to_string(int(angle));	/// @todo have a clever idea on how to compute the angle. perhaps store the current position. if thats not possible, the hpgl cant be generated beforehand. :(
+	string a = std::to_string(int(std::round(angle)));	/// @todo have a clever idea on how to compute the angle. perhaps store the current position. if thats not possible, the hpgl cant be generated beforehand. :(
+	if (a == "0") {
+		std::cerr << "angle is 0: " << a << angle << std::endl;
+		throw std::exception("angle is 0");
+	}
+	
 	out += (gcode_absolute_positioning ? "AA" : "AR"); // absolute or relative
-	out += std::to_string(int(std::stod(i)/(*factor))) + "," + std::to_string(int(std::stod(j)/(*factor))) + "," + a + ";";	
+	out += std::to_string(int(gcode_center_coordinate[0]/(*factor))) + "," + std::to_string(int(gcode_center_coordinate[1]/(*factor))) + "," + a + ";";	
 	return out;
 
 };
