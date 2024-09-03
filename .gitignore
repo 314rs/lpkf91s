@@ -10,3 +10,5 @@ project_version.h
 **output.hpgl
 **.py
 **.nc
+
+.DS_Store
