@@ -154,7 +154,7 @@ static string parse_g2_g3(const string in) {
 	string a = std::to_string(int(std::round(angle)));	/// @todo have a clever idea on how to compute the angle. perhaps store the current position. if thats not possible, the hpgl cant be generated beforehand. :(
 	if (a == "0") {
 		std::cerr << "angle is 0: " << a << angle << std::endl;
-		throw std::exception("angle is 0");
+		// throw std::exception("angle is 0");
 	}
 	
 	out += (gcode_absolute_positioning ? "AA" : "AR"); // absolute or relative
@@ -176,7 +176,8 @@ static string parse_g4(const string in) {
 	auto p_ind = std::find_if(splitted.begin(), splitted.end(), [](string s) { return s[0] == 'P'; });
 	auto s_ind = std::find_if(splitted.begin(), splitted.end(), [](string s) { return s[0] == 'S'; });
 	if (p_ind != splitted.end() && s_ind != splitted.end()) {
-		throw std::exception("gcode g4: found p and s arguments. dont know how what to do with that.");
+		// throw std::exception("gcode g4: found p and s arguments. dont know how what to do with that.");
+		std::cerr << "gcode g4: found p and s arguments. dont know how what to do with that." << std::endl;
 	} else if (p_ind != splitted.end()) {
 		// P argument is in milliseconds
 		string p = splitted[p_ind - splitted.begin()];
