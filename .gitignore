@@ -12,3 +12,4 @@ project_version.h
 **.nc
 
 .DS_Store
+src/version.hpp

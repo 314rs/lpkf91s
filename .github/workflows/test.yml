@@ -1,0 +1,81 @@
+# This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
+name: CMake and CTest
+
+on:
+  push:
+    branches: [ "main" ]
+#  pull_request:
+#    branches: [ "main" ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BUILD_TYPE: Debug
+
+jobs:
+  build:
+    strategy: 
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+      fail-fast: false
+  
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/cache@v4
+      id: cache
+      with:
+        path: | 
+          ~/.conan2/
+        key: ${{ runner.os }}-conan-dependencies
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3"
+        cache: "pip"
+             
+    - name: conan
+      run: | 
+        pip3 install conan
+        conan profile detect --force
+        conan install conanfile.txt --build=missing
+
+    - name: install CMake Ubuntu
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt install build-essential tree
+
+    - name: build on ubuntu and macos
+      if: matrix.os != 'windows-latest'
+      # Build your program with the given configuration
+      run: | 
+        cmake --version
+        cmake --preset conan-release
+        cmake --build ${{github.workspace}}/build/${{env.BUILD_TYPE}}/ --config ${{env.BUILD_TYPE}}
+
+    - name: build on windows
+      if: matrix.os == 'windows-latest'
+      # Build your program with the given configuration
+      run: |
+        cmake --version
+        cmake --preset conan-default
+        cmake --build ${{github.workspace}}/build/ --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build/${{env.BUILD_TYPE}}/
+      run: ctest -C ${{env.BUILD_TYPE}} --output-junit test_results.xml
+      
+    - uses: test-summary/action@v2.4
+      with:
+        paths: "build/${{env.BUILD_TYPE}}/test_results.xml"
+      if: always()
+
