@@ -54,7 +54,7 @@ jobs:
       run: |
         sudo apt install build-essential tree
     - name: install wxwidgets mac
-      if: matrix.os == "macos-latest"
+      if: matrix.os == 'macos-latest'
       run: brew install wxwidgets
 
     - name: Build on ubuntu and macos
