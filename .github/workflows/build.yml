@@ -77,9 +77,9 @@ jobs:
       with:
         name: ${{matrix.os}}-binaries
         path: |
-          build/Release/gcode2hpgl.exe
+          build/Release/gcode2hpgl-*
           build/Release/hpgl2lpkf91s.exe
           build/Release/sendHPGL.exe
-          build/Release/gcode2hpgl
           build/Release/hpgl2lpkf91s
           build/Release/sendHPGL
+          build/Release/lpkf91s
